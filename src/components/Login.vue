@@ -9,6 +9,7 @@
       Enter Password:
       <input type="password" name="password" maxlength="20">
     </label>
+    <button type="submit" name="login">Login</button>
   </div>
 </template>
 

@@ -22,4 +22,12 @@ describe('Login.vue', () => {
         expect(passwordInput.attributes().maxlength).toEqual("20");
         expect(passwordInput.attributes().type).toEqual("password");
     });
+    it('should have login button.', () => {
+        const wrapper = shallowMount(Login, {});
+
+        let passwordInput = wrapper.find('button[name=login]');
+        expect(passwordInput.isVisible()).toBeTruthy();
+        expect(passwordInput.text()).toEqual("Login");
+    });
 })
+//TODO: 1. Wrap fields in form element. 2. Change button type to submit.
