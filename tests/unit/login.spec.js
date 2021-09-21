@@ -1,4 +1,4 @@
-import { shallowMount } from '@vue/test-utils'
+import {shallowMount} from '@vue/test-utils'
 import Login from "../../src/components/Login";
 
 describe('Login.vue', () => {
@@ -12,5 +12,6 @@ describe('Login.vue', () => {
 
         let usernameInput = wrapper.find('input[name=username]');
         expect(usernameInput.isVisible()).toBeTruthy();
+        expect(usernameInput.attributes().maxlength).toEqual("20");
     });
 })
