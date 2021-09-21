@@ -1,7 +1,10 @@
 <template>
   <div class="container">
     <h1>Login to Area52</h1>
-    <input type="text" name="username" maxlength="20">
+    <label>
+      Enter Username/Email or Phone:
+      <input type="text" name="username" maxlength="20">
+    </label>
   </div>
 </template>
 
