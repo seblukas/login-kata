@@ -48,5 +48,8 @@ describe('Login.vue', () => {
 
         expect(loginMock).toBeCalledWith('username', 'password');
     });
+    xit('should show error message on unsuccessful login attempt.', () => {
+
+    });
 })
 //TODO: 1. Wrap fields in form element. 2. Change button type to submit.
