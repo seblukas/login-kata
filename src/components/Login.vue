@@ -1,6 +1,7 @@
 <template>
   <div class="container">
     <h1>Login to Area52</h1>
+    <input type="text" name="username">
   </div>
 </template>
 
