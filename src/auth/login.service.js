@@ -3,9 +3,7 @@ export class LoginResponse {
     message = "";
 }
 
-export default class LoginService {
-    async login(username, password) {
-        throw new Error(`Should not be called`);
-        // return new LoginResponse();
-    }
+export default async function login(username, password) {
+    throw new Error(`Should not be called`);
+    // return new LoginResponse();
 }
