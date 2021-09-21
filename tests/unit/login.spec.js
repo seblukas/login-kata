@@ -53,3 +53,4 @@ describe('Login.vue', () => {
     });
 })
 //TODO: 1. Wrap fields in form element. 2. Change button type to submit.
+//TODO: 2. On successful login, the login component should disappear.
