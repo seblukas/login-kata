@@ -40,8 +40,8 @@ describe('Login.vue', () => {
         });
         const usernameInput = wrapper.find('input[name=username]');
         const passwordInput = wrapper.find('input[name=password]');
-        usernameInput.text('username');
-        passwordInput.text('password');
+        usernameInput.setValue('username');
+        passwordInput.setValue('password');
 
         const loginButton = wrapper.find('button[name=login]');
         loginButton.trigger('click');

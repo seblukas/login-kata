@@ -3,19 +3,32 @@
     <h1>Login to Area52</h1>
     <label>
       Enter Username/Email or Phone:
-      <input type="text" name="username" maxlength="20">
+      <input type="text" name="username" v-model="username"  maxlength="20">
     </label>
     <label>
       Enter Password:
-      <input type="password" name="password" maxlength="20">
+      <input type="password" name="password" v-model="password" maxlength="20">
     </label>
-    <button type="submit" name="login">Login</button>
+    <button type="submit" name="login" @click="onLoginClicked">Login</button>
   </div>
 </template>
 
 <script>
+
+
 export default {
-  name: "Login"
+  name: "Login",
+  data() {
+    return {
+      username: '',
+      password: ''
+    }
+  },
+  methods: {
+    onLoginClicked() {
+      this.login(this.username, this.password);
+    }
+  }
 }
 </script>
 
