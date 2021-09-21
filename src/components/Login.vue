@@ -5,6 +5,10 @@
       Enter Username/Email or Phone:
       <input type="text" name="username" maxlength="20">
     </label>
+    <label>
+      Enter Password:
+      <input type="password" name="password" maxlength="20">
+    </label>
   </div>
 </template>
 

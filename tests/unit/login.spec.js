@@ -14,4 +14,12 @@ describe('Login.vue', () => {
         expect(usernameInput.isVisible()).toBeTruthy();
         expect(usernameInput.attributes().maxlength).toEqual("20");
     });
+    it('should have password input field with length 20.', () => {
+        const wrapper = shallowMount(Login, {});
+
+        let passwordInput = wrapper.find('input[name=password]');
+        expect(passwordInput.isVisible()).toBeTruthy();
+        expect(passwordInput.attributes().maxlength).toEqual("20");
+        expect(passwordInput.attributes().type).toEqual("password");
+    });
 })
