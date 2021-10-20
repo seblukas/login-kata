@@ -5,14 +5,15 @@ import Login from "../components/Login";
 Vue.use(VueRouter)
 
 const routes = [
-  {
-    path: '/login',
-    component: Login
-  }
+    {
+        path: '/login',
+        component: Login,
+        name: 'Login'
+    }
 ]
 
 const router = new VueRouter({
-  routes
+    routes
 })
 
 export default router

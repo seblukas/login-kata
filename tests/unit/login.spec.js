@@ -97,8 +97,10 @@ describe('Login.vue', () => {
 
     it('should open login screen.', () => {
         const wrapper = createLogin(null);
+        router.push({path: 'login'});
 
         expect(wrapper.vm.$router.currentRoute.name).toEqual('Login');
+        expect(wrapper.vm.$router.currentRoute.path).toEqual('/login');
     });
 
     // sketch of possible test case
