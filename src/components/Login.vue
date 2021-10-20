@@ -6,7 +6,7 @@
     <h1>Login to Area52</h1>
     <label>
       Enter Username/Email or Phone:
-      <input type="text" name="username" v-model="username"  maxlength="20">
+      <input type="text" name="username" v-model="username" maxlength="20">
     </label>
     <label>
       Enter Password:
@@ -33,7 +33,6 @@ export default {
       try {
         const result = await this.login(this.username, this.password);
         this.authError = !result.success;
-        console.log(result);
       } catch (err) {
         this.authError = true;
       }
