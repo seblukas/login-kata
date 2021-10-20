@@ -1,5 +1,7 @@
 import {shallowMount} from '@vue/test-utils'
 import Login from "../../src/components/Login";
+import Vue from "vue";
+import {LoginResponse} from "../../src/auth/login.service";
 
 describe('Login.vue', () => {
     it('should have title.', () => {
@@ -47,9 +49,34 @@ describe('Login.vue', () => {
         loginButton.trigger('click');
 
         expect(loginMock).toBeCalledWith('username', 'password');
+        const error = wrapper.findAll('.auth-error');
+        expect(error.length).toEqual(0);
     });
-    xit('should show error message on unsuccessful login attempt.', () => {
+    it('should show error message on unsuccessful login attempt.', async () => {
+        const loginMock = async (username, password) => {
+            const response =  new LoginResponse();
+            response.success = false;
+            response.message = 'Login failed';
+            return response;
+        }
+        const wrapper = shallowMount(Login, {
+            data() {
+                return {
+                    login: loginMock
+                }
+            }
+        });
+        const usernameInput = wrapper.find('input[name=username]');
+        const passwordInput = wrapper.find('input[name=password]');
+        usernameInput.setValue('username');
+        passwordInput.setValue('password');
 
+        const loginButton = wrapper.find('button[name=login]');
+        loginButton.trigger('click');
+        await Vue.nextTick();
+        await Vue.nextTick();
+        const error = wrapper.find('.auth-error');
+        expect(error.text()).toEqual('Authentication failed');
     });
 })
 //TODO: 1. Wrap fields in form element. 2. Change button type to submit.

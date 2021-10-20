@@ -1,5 +1,8 @@
 <template>
   <div class="container">
+    <div v-if="authError" class="auth-error">
+      Authentication failed
+    </div>
     <h1>Login to Area52</h1>
     <label>
       Enter Username/Email or Phone:
@@ -21,12 +24,19 @@ export default {
   data() {
     return {
       username: '',
-      password: ''
+      password: '',
+      authError: false
     }
   },
   methods: {
-    onLoginClicked() {
-      this.login(this.username, this.password);
+    async onLoginClicked() {
+      try {
+        const result = await this.login(this.username, this.password);
+        this.authError = !result.success;
+        console.log(result);
+      } catch (err) {
+        this.authError = true;
+      }
     }
   }
 }
