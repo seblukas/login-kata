@@ -1,8 +1,5 @@
 <template>
   <div class="container">
-    <div v-if="authError" class="auth-error">
-      Authentication failed
-    </div>
     <h1>Login to Area52</h1>
     <label>
       Enter Username/Email or Phone:
@@ -12,6 +9,9 @@
       Enter Password:
       <input type="password" name="password" v-model="password" maxlength="20">
     </label>
+    <div v-if="authError" class="auth-error">
+      Authentication failed
+    </div>
     <button type="submit" name="login" @click="onLoginClicked">Login</button>
   </div>
 </template>

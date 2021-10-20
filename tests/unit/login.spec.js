@@ -87,6 +87,25 @@ describe('Login.vue', () => {
 
         expectAuthError(wrapper);
     });
+
+    it('should open login screen.', () => {
+
+    });
+
+    // sketch of possible test case
+    xit('should close login screen after success login', () => {
+        const successLoginResponse = async () => {
+            const response = new LoginResponse();
+            response.success = true;
+            return response;
+        }
+        const closeComponent = jest.fn();
+        const wrapper = createLogin(successLoginResponse, closeComponent);
+
+        login(wrapper);
+
+        expect(closeComponent).toHaveBeenCalled();
+    });
 })
 //TODO: 1. Wrap fields in form element. 2. Change button type to submit.
 //TODO: 2. On successful login, the login component should disappear.

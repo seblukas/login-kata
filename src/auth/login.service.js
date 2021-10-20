@@ -4,6 +4,6 @@ export class LoginResponse {
 }
 
 export default async function login(username, password) {
-    throw new Error(`Should not be called`);
+    throw new Error(`Should not be called ${username} ${password}`);
     // return new LoginResponse();
 }
