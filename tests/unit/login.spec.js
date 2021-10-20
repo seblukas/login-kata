@@ -1,15 +1,22 @@
-import {mount} from '@vue/test-utils'
+import {createLocalVue, shallowMount} from '@vue/test-utils'
 import Login from "../../src/components/Login";
 import Vue from "vue";
 import {LoginResponse} from "../../src/auth/login.service";
+import VueRouter from 'vue-router';
+import router from "../../src/router";
+
+const localVue = createLocalVue();
+localVue.use(VueRouter);
 
 function createLogin(loginMock) {
-    return mount(Login, {
+    return shallowMount(Login, {
+        localVue,
+        router,
         data() {
             return {
                 login: loginMock
             }
-        }
+        },
     });
 }
 
@@ -89,7 +96,9 @@ describe('Login.vue', () => {
     });
 
     it('should open login screen.', () => {
+        const wrapper = createLogin(null);
 
+        expect(wrapper.vm.$router.currentRoute.name).toEqual('Login');
     });
 
     // sketch of possible test case
