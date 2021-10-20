@@ -1,10 +1,10 @@
-import {shallowMount} from '@vue/test-utils'
+import {mount} from '@vue/test-utils'
 import Login from "../../src/components/Login";
 import Vue from "vue";
 import {LoginResponse} from "../../src/auth/login.service";
 
 function createLogin(loginMock) {
-    return shallowMount(Login, {
+    return mount(Login, {
         data() {
             return {
                 login: loginMock
