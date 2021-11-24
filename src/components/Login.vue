@@ -13,6 +13,7 @@
       Authentication failed
     </div>
     <button type="submit" name="login" @click="onLoginClicked">Login</button>
+    <button id="cancelBtn" :hidden="isSubmitting" @click="cancelLogin">Cancel</button>
   </div>
 </template>
 
@@ -28,24 +29,42 @@ export default {
       password: '',
       authError: false,
       isSubmitting: false,
-      login
+      login,
+      loginRequest: undefined
     }
   },
   methods: {
     async onLoginClicked() {
       this.isSubmitting = true;
-      try {
-        const result = await this.login(this.username, this.password);
-        this.authError = !result.success;
-        this.redirectToDashboard();
-      } catch (err) {
-        this.authError = true;
-      } finally {
+      this.loginRequest = this.login(this.username, this.password);
+
+      this.loginRequest
+          .then(result => {
+            if (this.loginRequest.isCancelled()) {
+              console.log('Request aborted');
+              return;
+            }
+            console.log('Success login', this.loginRequest.isCancelled());
+            this.authError = !result.success;
+            this.redirectToDashboard();
+          })
+          .catch(() => {
+            if (this.loginRequest.isCancelled()) {
+              console.log('Request aborted');
+              return;
+            }
+            console.log('Failed login');
+            this.authError = true;
+          }).finally(() => {
+        console.log('Finally');
         this.isSubmitting = false;
-      }
+      });
     },
     redirectToDashboard() {
       this.$router.push({name: 'Dashboard', path: '/dashboard'});
+    },
+    cancelLogin() {
+      this.loginRequest.cancel();
     }
   }
 }

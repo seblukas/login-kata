@@ -4,9 +4,11 @@ import Vue from "vue";
 import {LoginResponse} from "../../src/auth/login.service";
 import VueRouter from 'vue-router';
 import router from "../../src/router";
+import {Promise} from "bluebird";
 
 const localVue = createLocalVue();
 localVue.use(VueRouter);
+
 
 function createLogin(loginMock) {
     return shallowMount(Login, {
@@ -73,7 +75,7 @@ describe('Login.vue', () => {
         expect(loginButton.text()).toEqual("Login");
     });
     it('should invoke backend when login button is clicked.', () => {
-        const loginMock = jest.fn();
+        const loginMock = jest.fn(() => () => new Promise(resolve => resolve()));
         const wrapper = createLogin(loginMock);
 
         login(wrapper);
@@ -82,11 +84,13 @@ describe('Login.vue', () => {
         expectNoAuthError(wrapper);
     });
     it('should show error message on unsuccessful login attempt.', async () => {
-        const failedLoginResponse = async () => {
-            const response = new LoginResponse();
-            response.success = false;
-            response.message = 'Login failed';
-            return response;
+        const failedLoginResponse = function () {
+            return new Promise(resolve => {
+                const response = new LoginResponse();
+                response.success = false;
+                response.message = 'Login failed';
+                resolve(response);
+            });
         }
         const wrapper = createLogin(failedLoginResponse);
 
@@ -105,10 +109,12 @@ describe('Login.vue', () => {
 
     // sketch of possible test case
     it('should close login screen after success login', async () => {
-        const successLoginResponse = async () => {
-            const response = new LoginResponse();
-            response.success = true;
-            return response;
+        const successLoginResponse = function() {
+            return new Promise(resolve => {
+                const response = new LoginResponse();
+                response.success = true;
+                resolve(response);
+            });
         }
         const wrapper = createLogin(successLoginResponse);
 
@@ -117,7 +123,7 @@ describe('Login.vue', () => {
         expect(wrapper.vm.$router.currentRoute.path).toEqual('/dashboard');
     });
     it('should show cancel button when performing login.', async (done) => {
-        const successLoginResponse = async () => {
+        const successLoginResponse = function () {
             return new Promise((resolve) => {
                 setTimeout(() => {
                     const response = new LoginResponse();
@@ -137,13 +143,16 @@ describe('Login.vue', () => {
         expect(wrapper.find('#cancelBtn').isVisible()).toBeTruthy();
     });
     it('should cancel login when clicking on cancel button.', () => {
-        const successLoginResponse = async () => {
-            return new Promise((resolve) => {
+        const successLoginResponse = function () {
+            return new Promise((resolve, _, onCancel) => {
                 setTimeout(() => {
                     const response = new LoginResponse();
                     response.success = true;
                     resolve(response);
-                }, 0);
+                }, 1000);
+                onCancel(function () {
+                    console.log('Request is canceled');
+                });
             })
         }
         const wrapper = createLogin(successLoginResponse);
