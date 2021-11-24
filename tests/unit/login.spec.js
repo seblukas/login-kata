@@ -1,11 +1,14 @@
 import {createLocalVue, shallowMount} from '@vue/test-utils'
-import Login from "../../src/components/Login";
-import Vue from "vue";
-import {LoginResponse} from "../../src/auth/login.service";
+import Login from '../../src/components/Login';
+import Vue from 'vue';
+import {LoginResponse} from '../../src/auth/login.service';
 import VueRouter from 'vue-router';
-import router from "../../src/router";
-import {Promise} from "bluebird";
+import router from '../../src/router';
+import {Promise} from 'bluebird';
 
+Promise.config({
+    cancellation: true
+});
 const localVue = createLocalVue();
 localVue.use(VueRouter);
 
@@ -47,6 +50,12 @@ function expectAuthError(wrapper) {
 }
 
 describe('Login.vue', () => {
+
+    beforeEach(function () {
+        if (router.currentRoute.path !== '/') {
+            router.push({path: '/'});
+        }
+    });
     it('should have title.', () => {
         const wrapper = createLogin(null);
 
@@ -57,28 +66,28 @@ describe('Login.vue', () => {
 
         let usernameInput = wrapper.find('input[name=username]');
         expect(usernameInput.isVisible()).toBeTruthy();
-        expect(usernameInput.attributes().maxlength).toEqual("20");
+        expect(usernameInput.attributes().maxlength).toEqual('20');
     });
     it('should have password input field with length 20.', () => {
         const wrapper = createLogin(null);
 
         let passwordInput = wrapper.find('input[name=password]');
         expect(passwordInput.isVisible()).toBeTruthy();
-        expect(passwordInput.attributes().maxlength).toEqual("20");
-        expect(passwordInput.attributes().type).toEqual("password");
+        expect(passwordInput.attributes().maxlength).toEqual('20');
+        expect(passwordInput.attributes().type).toEqual('password');
     });
     it('should have login button.', () => {
         const wrapper = createLogin(null);
 
         const loginButton = wrapper.find('button[name=login]');
         expect(loginButton.isVisible()).toBeTruthy();
-        expect(loginButton.text()).toEqual("Login");
+        expect(loginButton.text()).toEqual('Login');
     });
-    it('should invoke backend when login button is clicked.', () => {
-        const loginMock = jest.fn(() => () => new Promise(resolve => resolve()));
+    it('should invoke backend when login button is clicked.', async () => {
+        const loginMock = jest.fn(() => new Promise(resolve => resolve(new LoginResponse())));
         const wrapper = createLogin(loginMock);
 
-        login(wrapper);
+        await login(wrapper);
 
         expect(loginMock).toBeCalledWith('username', 'password');
         expectNoAuthError(wrapper);
@@ -98,7 +107,6 @@ describe('Login.vue', () => {
 
         expectAuthError(wrapper);
     });
-
     it('should open login screen.', () => {
         const wrapper = createLogin(null);
         router.push({path: 'login'});
@@ -106,10 +114,8 @@ describe('Login.vue', () => {
         expect(wrapper.vm.$router.currentRoute.name).toEqual('Login');
         expect(wrapper.vm.$router.currentRoute.path).toEqual('/login');
     });
-
-    // sketch of possible test case
     it('should close login screen after success login', async () => {
-        const successLoginResponse = function() {
+        const successLoginResponse = function () {
             return new Promise(resolve => {
                 const response = new LoginResponse();
                 response.success = true;
@@ -122,46 +128,61 @@ describe('Login.vue', () => {
 
         expect(wrapper.vm.$router.currentRoute.path).toEqual('/dashboard');
     });
-    it('should show cancel button when performing login.', async (done) => {
+    it('should show cancel button when performing login.', async () => {
         const successLoginResponse = function () {
             return new Promise((resolve) => {
                 setTimeout(() => {
                     const response = new LoginResponse();
-                    response.success = true;
                     resolve(response);
                 }, 0);
             })
         }
         const wrapper = createLogin(successLoginResponse);
 
-        login(wrapper).then(
-            () => {
-                expect(wrapper.find('#cancelBtn').isVisible()).toBeFalsy();
-                done();
-            }
-        );
+        await login(wrapper);
+
         expect(wrapper.find('#cancelBtn').isVisible()).toBeTruthy();
     });
-    it('should cancel login when clicking on cancel button.', () => {
+    it('should hide cancel button after failing login.', async (done) => {
         const successLoginResponse = function () {
-            return new Promise((resolve, _, onCancel) => {
+            return new Promise((_, reject) => {
                 setTimeout(() => {
-                    const response = new LoginResponse();
-                    response.success = true;
-                    resolve(response);
-                }, 1000);
-                onCancel(function () {
-                    console.log('Request is canceled');
-                });
+                    reject(new Error('Failed login attempt'));
+                }, 0);
             })
         }
         const wrapper = createLogin(successLoginResponse);
 
-        login(wrapper);
-        wrapper.find('#cancelBtn').trigger('click');
+        await login(wrapper);
 
-        expect(wrapper.vm.$data.authError).toBeFalsy();
-        expect(wrapper.vm.$router.currentRoute.path).toEqual('/');
+        setTimeout(() => {
+            expect(wrapper.find('#cancelBtn').element).toBeFalsy();
+            done();
+        }, 1);
+    });
+    it('should cancel login when clicking on cancel button.', async (done) => {
+        const successLoginResponse = function () {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    const response = new LoginResponse();
+                    response.success = true;
+                    resolve(response);
+                }, 0);
+            });
+        }
+        const wrapper = createLogin(successLoginResponse);
+        const redirect = jest.fn();
+        wrapper.vm.redirectToDashboard = redirect;
+
+        await login(wrapper);
+        await wrapper.find('#cancelBtn').trigger('click');
+
+        setTimeout(() => {
+            expect(wrapper.vm.$data.authError).toBeFalsy();
+            expect(redirect).not.toHaveBeenCalled();
+            expect(wrapper.vm.$router.currentRoute.path).toEqual('/');
+            done();
+        }, 1);
     });
 })
 //TODO: 1. Wrap fields in form element. 2. Change button type to submit.

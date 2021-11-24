@@ -13,16 +13,15 @@
       Authentication failed
     </div>
     <button type="submit" name="login" @click="onLoginClicked">Login</button>
-    <button id="cancelBtn" :hidden="isSubmitting" @click="cancelLogin">Cancel</button>
+    <button id="cancelBtn" v-if="isSubmitting" @click="cancelLogin">Cancel</button>
   </div>
 </template>
 
 <script>
 import login from '../auth/login.service';
 
-
 export default {
-  name: "Login",
+  name: 'Login',
   data() {
     return {
       username: '',
@@ -40,25 +39,16 @@ export default {
 
       this.loginRequest
           .then(result => {
-            if (this.loginRequest.isCancelled()) {
-              console.log('Request aborted');
-              return;
-            }
-            console.log('Success login', this.loginRequest.isCancelled());
             this.authError = !result.success;
-            this.redirectToDashboard();
+            -
+                this.redirectToDashboard();
           })
           .catch(() => {
-            if (this.loginRequest.isCancelled()) {
-              console.log('Request aborted');
-              return;
-            }
-            console.log('Failed login');
             this.authError = true;
-          }).finally(() => {
-        console.log('Finally');
-        this.isSubmitting = false;
-      });
+          })
+          .finally(() => {
+            this.isSubmitting = false;
+          });
     },
     redirectToDashboard() {
       this.$router.push({name: 'Dashboard', path: '/dashboard'});
