@@ -104,18 +104,55 @@ describe('Login.vue', () => {
     });
 
     // sketch of possible test case
-    xit('should close login screen after success login', () => {
+    it('should close login screen after success login', async () => {
         const successLoginResponse = async () => {
             const response = new LoginResponse();
             response.success = true;
             return response;
         }
-        const closeComponent = jest.fn();
-        const wrapper = createLogin(successLoginResponse, closeComponent);
+        const wrapper = createLogin(successLoginResponse);
+
+        await login(wrapper);
+
+        expect(wrapper.vm.$router.currentRoute.path).toEqual('/dashboard');
+    });
+    it('should show cancel button when performing login.', async (done) => {
+        const successLoginResponse = async () => {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    const response = new LoginResponse();
+                    response.success = true;
+                    resolve(response);
+                }, 0);
+            })
+        }
+        const wrapper = createLogin(successLoginResponse);
+
+        login(wrapper).then(
+            () => {
+                expect(wrapper.find('#cancelBtn').isVisible()).toBeFalsy();
+                done();
+            }
+        );
+        expect(wrapper.find('#cancelBtn').isVisible()).toBeTruthy();
+    });
+    it('should cancel login when clicking on cancel button.', () => {
+        const successLoginResponse = async () => {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    const response = new LoginResponse();
+                    response.success = true;
+                    resolve(response);
+                }, 0);
+            })
+        }
+        const wrapper = createLogin(successLoginResponse);
 
         login(wrapper);
+        wrapper.find('#cancelBtn').trigger('click');
 
-        expect(closeComponent).toHaveBeenCalled();
+        expect(wrapper.vm.$data.authError).toBeFalsy();
+        expect(wrapper.vm.$router.currentRoute.path).toEqual('/');
     });
 })
 //TODO: 1. Wrap fields in form element. 2. Change button type to submit.

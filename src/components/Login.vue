@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import login from '../auth/login.service';
 
 
 export default {
@@ -25,17 +26,26 @@ export default {
     return {
       username: '',
       password: '',
-      authError: false
+      authError: false,
+      isSubmitting: false,
+      login
     }
   },
   methods: {
     async onLoginClicked() {
+      this.isSubmitting = true;
       try {
         const result = await this.login(this.username, this.password);
         this.authError = !result.success;
+        this.redirectToDashboard();
       } catch (err) {
         this.authError = true;
+      } finally {
+        this.isSubmitting = false;
       }
+    },
+    redirectToDashboard() {
+      this.$router.push({name: 'Dashboard', path: '/dashboard'});
     }
   }
 }
